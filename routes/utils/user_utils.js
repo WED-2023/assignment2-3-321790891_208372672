@@ -21,10 +21,7 @@ async function markAsFavorite(user_username, recipe_id) {
 async function getFavoriteRecipes(user_id) {
     try {
         // Use parameterized queries to prevent SQL injection
-        const recipes_id = await DButils.execQuery(
-            `SELECT recipe_id FROM FavoriteRecipes WHERE user_id = ?`, 
-            [user_id]
-        );
+        const recipes_id = await DButils.execQuery(`select recipe_id from favorites where user_username='${user_id}'`);
         return recipes_id;
     } catch (error) {
         console.error('Error fetching favorite recipes:', error.message);

@@ -85,24 +85,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Correct the handler for adding favorites
-app.post('/users/favorites', async (req, res, next) => {
-  try {
-    console.log("dsdasdsadsad");
-    const user_id = req.session.user_id; // Extract user ID from session
-    const { recipeId } = req.body; // Extract recipe ID from request body
 
-    // Validate the recipeId is a number
-    if (!Number.isInteger(recipeId)) {
-      return res.status(400).send({ message: 'Invalid recipe ID' });
-    }
-
-    await user_utils.markAsFavorite(user_id, recipeId);
-    res.status(200).send("The Recipe successfully saved as favorite");
-  } catch (error) {
-    next(error);
-  }
-});
 
 // Endpoint to get recipe details by ID
 app.get('/api/recipes/:recipe_id/details', async (req, res) => {
