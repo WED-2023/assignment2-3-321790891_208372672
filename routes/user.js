@@ -89,6 +89,54 @@ router.get('/favorites', async (req, res, next) => {
   }
 });
 
+// This path gets body with recipe details and saves it as a new recipe for the logged-in user
+router.post('/recipes', async (req, res, next) => {
+  try {
+    const user_id = req.session.user_id;
+    console.log("1:", user_id);
+    const {
+      recipe_id,
+      image,
+      title,
+      readyInMinutes,
+      aggregateLikes,
+      vegetarian,
+      vegan,
+      glutenFree,
+      summary,
+      analyzedInstructions,
+      instructions,
+      extendedIngredients,
+      servings
+    } = req.body;
+
+    // Validate required fields
+    if (!title || !instructions) {
+      return res.status(400).send({ message: 'Title and instructions are required' });
+    }
+
+    // Call the function to create a new recipe
+    await user_utils.createNewRecipe(user_id,{
+      recipe_id,
+      image,
+      title,
+      readyInMinutes,
+      aggregateLikes,
+      vegetarian,
+      vegan,
+      glutenFree,
+      summary,
+      analyzedInstructions,
+      instructions,
+      extendedIngredients,
+      servings
+    });
+
+    res.status(201).send("Recipe successfully created");
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * Error handling middleware
