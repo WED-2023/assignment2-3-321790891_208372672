@@ -19,6 +19,7 @@ router.get("/search", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
 
 /**
  * This path returns a full details of a recipe by its id
@@ -33,3 +34,4 @@ router.get("/:recipeId", async (req, res, next) => {
 });
 
 module.exports = router;
+

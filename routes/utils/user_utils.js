@@ -1,15 +1,37 @@
 const DButils = require("./DButils");
-
-async function markAsFavorite(user_id, recipe_id){
-    await DButils.execQuery(`insert into FavoriteRecipes values ('${user_id}',${recipe_id})`);
+async function markAsFavorite(user_username, recipe_id) {
+    try {
+        console.log("user:", user_username);
+        // Use parameterized queries to prevent SQL injection
+        await DButils.execQuery(
+            `INSERT INTO favorites (user_username, recipe_id) VALUES (?, ?)`, 
+            [user_username, recipe_id] // Pass parameters as an array
+        );
+        console.log(`Successfully added recipe ${recipe_id} to favorites for user ${user_username}`);
+    } catch (error) {
+        // Handle potential duplicate key error or other insertion issues
+        if (error.code === 'ER_DUP_ENTRY') {
+            console.error(`Recipe ${recipe_id} is already marked as favorite for user ${user_username}`);
+        } else {
+            console.error('Error marking recipe as favorite:', error.message);
+        }
+        throw error; // Propagate error for further handling
+    }
 }
 
-async function getFavoriteRecipes(user_id){
-    const recipes_id = await DButils.execQuery(`select recipe_id from FavoriteRecipes where user_id='${user_id}'`);
-    return recipes_id;
+async function getFavoriteRecipes(user_id) {
+    try {
+        // Use parameterized queries to prevent SQL injection
+        const recipes_id = await DButils.execQuery(
+            `SELECT recipe_id FROM FavoriteRecipes WHERE user_id = ?`, 
+            [user_id]
+        );
+        return recipes_id;
+    } catch (error) {
+        console.error('Error fetching favorite recipes:', error.message);
+        throw error; // Propagate error to the caller for further handling
+    }
 }
-
-
 
 exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
