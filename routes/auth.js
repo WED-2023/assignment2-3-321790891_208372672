@@ -60,8 +60,8 @@ router.post("/Login", async (req, res, next) => {
       throw { status: 401, message: "Username or Password incorrect" };
     }
 
-    // Set session data
-    req.session.user_id = user.username; // Set session with the correct identifier
+    // Set session data correctly
+    req.session.username = user.username; // Correctly set username in session
     console.log('Session after login:', req.session); // Debug: Check session data after login
 
     // Return success response

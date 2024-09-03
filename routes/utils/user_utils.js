@@ -4,9 +4,8 @@ async function markAsFavorite(user_username, recipe_id) {
         console.log("user:", user_username);
         // Use parameterized queries to prevent SQL injection
         await DButils.execQuery(
-            `INSERT INTO favorites (user_username, recipe_id) VALUES (?, ?)`, 
-            [user_username, recipe_id] // Pass parameters as an array
-        );
+            `INSERT INTO favorites (user_username, recipe_id) VALUES ('${user_username}', ${recipe_id})`
+          );
         console.log(`Successfully added recipe ${recipe_id} to favorites for user ${user_username}`);
     } catch (error) {
         // Handle potential duplicate key error or other insertion issues

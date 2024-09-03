@@ -14,7 +14,7 @@ router.use(async function (req, res, next) {
       // Verify if the user exists in the database using the correct column
       const users = await DButils.execQuery("SELECT username FROM users");
       if (users.find((x) => x.username === req.session.username)) {
-        req.user_id = req.session.username; // Set req.user_id to the session username or appropriate field
+        req.user_id = req.session.username; // Set req.user_id to the session username
         return next(); // Proceed to the next middleware or route handler
       }
       res.sendStatus(401); // Send Unauthorized if username not found in the database
@@ -28,32 +28,20 @@ router.use(async function (req, res, next) {
 });
 
 
+
 /**
  * This path gets body with recipeId and saves this recipe in the favorites list of the logged-in user
  */
-router.post('/favorites', async (req, res, next) => {
-  try {
-    const user_id = req.session.user_id;
-    const { recipeId } = req.body;
-
-    // Validate the recipeId is a number
-    if (!Number.isInteger(recipeId)) {
-      return res.status(400).send({ message: 'Invalid recipe ID' });
-    }
-
-    await user_utils.markAsFavorite(user_id, recipeId);
-    res.status(200).send("The Recipe successfully saved as favorite");
-  } catch (error) {
-    next(error);
-  }
-});
 
 /**
  * This path returns the favorites recipes that were saved by the logged-in user
  */
 router.get('/favorites', async (req, res, next) => {
   try {
+    
+
     const user_id = req.session.user_id;
+    console.log("the iserna,eee:", user_id);
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     const recipes_id_array = recipes_id.map((element) => element.recipe_id); // Extract recipe IDs into an array
 
