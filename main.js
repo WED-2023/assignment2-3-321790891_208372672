@@ -1,4 +1,8 @@
 require("dotenv").config();
+
+console.log("Spoonacular API Key:", process.env.spooncular_apiKey);
+
+
 var express = require("express");
 var path = require("path");
 var logger = require("morgan");
@@ -53,7 +57,6 @@ app.use("/users", user);
 app.use("/recipes", recipes);
 app.use("/auth", auth);
 
-// Middleware to check session and user authentication
 // Middleware to check session and user authentication
 app.use(function (req, res, next) {
   if (req.session && req.session.username) {  // Use username instead of user_id
