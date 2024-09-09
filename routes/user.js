@@ -89,6 +89,9 @@ router.get('/favorites', async (req, res, next) => {
   }
 });
 
+
+
+
 // // This path gets body with recipe details and saves it as a new recipe for the logged-in user
 // router.post('/recipes', async (req, res, next) => {
 //   try {
