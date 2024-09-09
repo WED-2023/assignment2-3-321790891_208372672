@@ -29,69 +29,6 @@ async function getFavoriteRecipes(user_id) {
     }
 }
 
-
-// async function createNewRecipe(user_id, recipeDetails) {
-//     try {
-//         const {
-//             recipe_id,
-//             image,
-//             title,
-//             readyInMinutes,
-//             aggregateLikes,
-//             vegetarian,
-//             vegan,
-//             glutenFree,
-//             summary,
-//             analyzedInstructions,
-//             instructions,
-//             extendedIngredients,
-//             servings
-//         } = recipeDetails;
-
-//         console.log('User ID:', user_id);
-
-//         // Safely stringify JSON fields, defaulting to valid empty JSON arrays if undefined or empty
-//         let analyzedInstructionsJSON = JSON.stringify(analyzedInstructions || []);
-//         let extendedIngredientsJSON = JSON.stringify(extendedIngredients || []);
-
-//         // Log serialized JSON to ensure correctness
-//         console.log('Serialized analyzedInstructions:', analyzedInstructionsJSON);
-//         console.log('Serialized extendedIngredients:', extendedIngredientsJSON);
-
-//         // Construct the SQL query with parameterized values
-//         const query = `
-//         INSERT INTO user_recipe
-//         (user_id, recipe_id, image, title, readyInMinutes, aggregateLikes, vegetarian, vegan, glutenFree, summary, analyzedInstructions, instructions, extendedIngredients, servings)
-//         VALUES ('${user_id}', '${recipe_id}', '${image}', '${title}', ${readyInMinutes}, ${aggregateLikes}, ${vegetarian}, ${vegan}, ${glutenFree}, '${summary}', '${analyzedInstructions}', '${instructions}', '${extendedIngredients}', ${servings})
-//       `;
-  
-
-//         const params = [
-//             user_id,
-//             recipe_id, // Corrected to use recipe_id from input
-//             image,
-//             title,
-//             readyInMinutes,
-//             aggregateLikes,
-//             vegetarian ? 1 : 0, // Store boolean as 0 or 1
-//             vegan ? 1 : 0,
-//             glutenFree ? 1 : 0,
-//             summary,
-//             analyzedInstructionsJSON, // Insert serialized JSON string
-//             instructions,
-//             extendedIngredientsJSON,  // Insert serialized JSON string
-//             servings
-//         ];
-
-//         // Execute the query with parameterized values
-//         await DButils.execQuery(query, params);
-//         console.log(`Successfully created recipe ${title} for user ${user_id}`);
-//     } catch (error) {
-//         console.error('Error creating new recipe:', error.message);
-//         throw error;
-//     }
-// }
-
 async function createNewRecipe(username, recipeDetails) {
     try {
         const {
@@ -138,31 +75,53 @@ async function createNewRecipe(username, recipeDetails) {
     }    
 }
 
-// Function to insert ingredients and instructions into their respective tables
+// Function to handle inserting both ingredients and instructions
 async function insertIngredientsAndInstructions(recipeId, ingredients, instructions) {
     try {
         // Insert ingredients
-        for (const ingredient of ingredients) {
-            const { name, amount, unit } = ingredient;
-            const ingredientQuery = `
-            INSERT INTO ingredients (recipe_id, name, amount, unit)
-            VALUES ('${recipeId}', '${name}', ${amount}, '${unit}')
-          `;
-            await DButils.execQuery(ingredientQuery, [recipeId, name, amount, unit]);
-        }
+        await insertIngredients(recipeId, ingredients);
 
         // Insert instructions
-        instructions.forEach(async (instruction, index) => {
-            const instructionQuery = `
-            INSERT INTO instructions (recipe_id, step_number, description)
-            VALUES ('${recipeId}', ${index + 1}, '${instruction}')
-          `;
-            await DButils.execQuery(instructionQuery, [recipeId, index + 1, instruction]);  // Step number is index + 1
-        });
+        await insertInstructions(recipeId, instructions);
 
         console.log(`Successfully inserted ingredients and instructions for recipe ID ${recipeId}`);
     } catch (error) {
         console.error('Error inserting ingredients or instructions:', error.message);
+        throw error;
+    }
+}
+
+// Function to insert ingredients into the ingredients table
+async function insertIngredients(recipeId, ingredients) {
+    try {
+        for (const ingredient of ingredients) {
+            const { name, amount, unit } = ingredient;
+            const ingredientQuery = `
+                INSERT INTO ingredients (recipe_id, name, amount, unit)
+                VALUES ('${recipeId}', '${name}', ${amount}, '${unit}')
+            `;
+            await DButils.execQuery(ingredientQuery);
+        }
+        console.log(`Successfully inserted ingredients for recipe ID ${recipeId}`);
+    } catch (error) {
+        console.error('Error inserting ingredients:', error.message);
+        throw error;
+    }
+}
+
+// Function to insert instructions into the instructions table
+async function insertInstructions(recipeId, instructions) {
+    try {
+        for (const [index, instruction] of instructions.entries()) {
+            const instructionQuery = `
+                INSERT INTO instructions (recipe_id, step_number, description)
+                VALUES ('${recipeId}', ${index + 1}, '${instruction.description}')
+            `;
+            await DButils.execQuery(instructionQuery);
+        }
+        console.log(`Successfully inserted instructions for recipe ID ${recipeId}`);
+    } catch (error) {
+        console.error('Error inserting instructions:', error.message);
         throw error;
     }
 }
