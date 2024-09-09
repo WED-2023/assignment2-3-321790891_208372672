@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 
 router.post("/Register", async (req, res, next) => {
   try {
-    console.log(1);
 
     // parameters exists
     // valid parameters
@@ -20,7 +19,6 @@ router.post("/Register", async (req, res, next) => {
       email: req.body.email,
       profilePic: req.body.profilePictureUrl
     }
-    console.log(1);
     let users = [];
     users = await DButils.execQuery("SELECT username from users");
     console.log(users);

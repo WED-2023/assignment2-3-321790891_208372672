@@ -126,7 +126,43 @@ async function insertInstructions(recipeId, instructions) {
     }
 }
 
-
+// Fetch recipes with ingredients and instructions for the logged-in user
+async function getUserRecipes(username) {
+    try {
+      // Query to get all recipes for the specific user
+      const recipeQuery = `SELECT * FROM user_recipe WHERE user_id = '${username}'`;
+      const recipes = await DButils.execQuery(recipeQuery);
+      
+      // Check if any recipes exist for the user
+      if (!recipes.length) {
+        return [];  // Return an empty array if no recipes found
+      }
+  
+      // Loop through each recipe and fetch ingredients and instructions
+      for (const recipe of recipes) {
+        const recipeId = recipe.recipe_id;
+  
+        // Fetch ingredients for the current recipe
+        const ingredientsQuery = `SELECT name, amount, unit FROM ingredients WHERE recipe_id = ${recipeId}`;
+        const ingredients = await DButils.execQuery(ingredientsQuery);
+  
+        // Fetch instructions for the current recipe
+        const instructionsQuery = `SELECT step_number, description FROM instructions WHERE recipe_id = ${recipeId} ORDER BY step_number`;
+        const instructions = await DButils.execQuery(instructionsQuery);
+  
+        // Attach ingredients and instructions to the recipe object
+        recipe.ingredients = ingredients;
+        recipe.instructions = instructions;
+      }
+  
+      return recipes;  // Return recipes with ingredients and instructions
+    } catch (error) {
+      console.error('Error fetching user recipes with details:', error.message);
+      throw error;
+    }
+  }
+  
+exports.getUserRecipes = getUserRecipes;
 exports.createNewRecipe = createNewRecipe;
 exports.insertIngredientsAndInstructions = insertIngredientsAndInstructions;
 exports.markAsFavorite = markAsFavorite;

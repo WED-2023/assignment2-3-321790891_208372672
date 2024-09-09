@@ -48,28 +48,6 @@ router.post('/favorites', async (req, res, next) => {
 });
 
 
-/**
- * This path returns the favorites recipes that were saved by the logged-in user
- */
-// router.get('/favorites', async (req, res, next) => {
-//   try {
-    
-//     console.log("dsdasdsadsad");
-
-//     const user_id = req.session.user_id;
-//     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
-//     const recipes_id_array = recipes_id.map((element) => element.recipe_id); // Extract recipe IDs into an array
-
-//     // const results = await recipe_utils.getRecipesPreview(recipes_id_array);
-    
-//     if (!results.length) {
-//       return res.status(404).send({ message: 'No favorite recipes found' });
-//     }
-//     res.status(200).send(results);
-//   } catch (error) {
-//     next(error); 
-//   }
-// });
 router.get('/favorites', async (req, res, next) => {
   try {
     console.log("Fetching favorite recipes for user:", req.session.user_id);
@@ -89,61 +67,6 @@ router.get('/favorites', async (req, res, next) => {
   }
 });
 
-// // This path gets body with recipe details and saves it as a new recipe for the logged-in user
-// router.post('/recipes', async (req, res, next) => {
-//   try {
-//     const user_id = req.session.username;
-//     const {
-//       recipe_id,
-//       image,
-//       title,
-//       readyInMinutes,
-//       aggregateLikes,
-//       vegetarian,
-//       vegan,
-//       glutenFree,
-//       summary,
-//       analyzedInstructions,
-//       instructions,
-//       extendedIngredients,
-//       servings
-//     } = req.body;
-
-//     // Validate required fields
-//     if (!title || !instructions) {
-//       return res.status(400).send({ message: 'Title and instructions are required' });
-//     }
-
-//     // Call the function to create a new recipe
-//     await user_utils.createNewRecipe(user_id,{
-//       recipe_id,
-//       image,
-//       title,
-//       readyInMinutes,
-//       aggregateLikes,
-//       vegetarian,
-//       vegan,
-//       glutenFree,
-//       summary,
-//       analyzedInstructions,
-//       instructions,
-//       extendedIngredients,
-//       servings
-//     });
-
-//     res.status(201).send("Recipe successfully created");
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// /**
-//  * Error handling middleware
-//  */
-// router.use((err, req, res, next) => {
-//   console.error(`Error: ${err.message}`);
-//   res.status(err.status || 500).send({ message: err.message });
-// });
 
 // This path gets body with recipe details and saves it as a new recipe for the logged-in user
 router.post('/recipes', async (req, res, next) => {
@@ -182,16 +105,34 @@ router.post('/recipes', async (req, res, next) => {
       servings
     });
 
-    console.log("--------------------create new recipe--------------------------------");
-
     // After the recipe is created, insert ingredients and instructions
     await user_utils.insertIngredientsAndInstructions(recipeId, extendedIngredients, instructions);
-
-    console.log("-----------------inserted IngredientsAndInstructions----------------------");
 
     res.status(201).send("Recipe successfully created");
   } catch (error) {
     next(error);
+  }
+});
+
+// GET all recipes for the logged-in user
+router.get('/recipes', async (req, res, next) => {
+  try {
+    const username = req.session.username;  // Get the username from the session
+    console.log('Fetching recipes for user:', username);
+
+    // Fetch recipes for the logged-in user
+    const recipes = await user_utils.getUserRecipes(username);
+
+    // Check if recipes were found, else send an appropriate response
+    if (!recipes.length) {
+      return res.status(404).send({ message: 'No recipes found' });
+    }
+
+    // Send the recipes as a response
+    res.status(200).send(recipes);
+  } catch (error) {
+    console.error('Error fetching recipes:', error.message);
+    next(error);  // Pass the error to the error handling middleware
   }
 });
 
