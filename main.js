@@ -1,8 +1,4 @@
 require("dotenv").config();
-
-console.log("Spoonacular API Key:", process.env.spooncular_apiKey);
-
-
 var express = require("express");
 var path = require("path");
 var logger = require("morgan");

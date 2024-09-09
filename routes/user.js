@@ -185,8 +185,12 @@ router.post('/recipes', async (req, res, next) => {
       servings
     });
 
+    console.log("--------------------create new recipe--------------------------------");
+
     // After the recipe is created, insert ingredients and instructions
     await user_utils.insertIngredientsAndInstructions(recipeId, extendedIngredients, instructions);
+
+    console.log("-----------------inserted IngredientsAndInstructions----------------------");
 
     res.status(201).send("Recipe successfully created");
   } catch (error) {

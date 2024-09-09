@@ -70,7 +70,6 @@ connectionLimit:4,
 const pool = new mysql.createPool(config);
 
 const connection =  () => {
-  console.log(2);
   return new Promise((resolve, reject) => {
   pool.getConnection((err, connection) => {
     // if (err) reject(err);
