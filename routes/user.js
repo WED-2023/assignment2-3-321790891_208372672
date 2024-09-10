@@ -56,75 +56,17 @@ router.get('/favorites', async (req, res, next) => {
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     const recipes_id_array = recipes_id.map((element) => element.recipe_id); // Extract recipe IDs into an array
 
-    // Print the recipes_id_array to the console
-    console.log("Favorite Recipe IDs:", recipes_id_array);
+  // Fetch the detailed information for each favorite recipe
+  const favorite_recipes = await recipe_utils.getRecipesPreview(recipes_id_array);
 
     // Temporary: Send the array directly as the response
-    res.status(200).send(recipes_id_array); // Respond with the array of recipe IDs
+    res.status(200).send(favorite_recipes); // Respond with the array of recipe IDs
   } catch (error) {
     console.error('Error fetching favorite recipes:', error.message);
     next(error); 
   }
 });
 
-
-
-
-// // This path gets body with recipe details and saves it as a new recipe for the logged-in user
-// router.post('/recipes', async (req, res, next) => {
-//   try {
-//     const user_id = req.session.username;
-//     const {
-//       recipe_id,
-//       image,
-//       title,
-//       readyInMinutes,
-//       aggregateLikes,
-//       vegetarian,
-//       vegan,
-//       glutenFree,
-//       summary,
-//       analyzedInstructions,
-//       instructions,
-//       extendedIngredients,
-//       servings
-//     } = req.body;
-
-//     // Validate required fields
-//     if (!title || !instructions) {
-//       return res.status(400).send({ message: 'Title and instructions are required' });
-//     }
-
-//     // Call the function to create a new recipe
-//     await user_utils.createNewRecipe(user_id,{
-//       recipe_id,
-//       image,
-//       title,
-//       readyInMinutes,
-//       aggregateLikes,
-//       vegetarian,
-//       vegan,
-//       glutenFree,
-//       summary,
-//       analyzedInstructions,
-//       instructions,
-//       extendedIngredients,
-//       servings
-//     });
-
-//     res.status(201).send("Recipe successfully created");
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// /**
-//  * Error handling middleware
-//  */
-// router.use((err, req, res, next) => {
-//   console.error(`Error: ${err.message}`);
-//   res.status(err.status || 500).send({ message: err.message });
-// });
 
 // This path gets body with recipe details and saves it as a new recipe for the logged-in user
 router.post('/recipes', async (req, res, next) => {

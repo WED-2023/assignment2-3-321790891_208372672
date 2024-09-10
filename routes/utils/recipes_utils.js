@@ -66,10 +66,10 @@ async function getRandomRecipes(number, includeTags, excludeTags) {
     });
   
     return getRecipesPreview(response.data.recipes.map((recipe) => recipe.id));
-  }
+}
 
 
-async function getRecipesPreview(recipe_ids, username) {
+async function getRecipesPreview(recipe_ids) {
     let recipes = [];
     for (let id of recipe_ids) {
         let recipeDetails = await getRecipeDetails(id);
@@ -84,7 +84,8 @@ module.exports = {
     getRecipeInformation,
     getRecipeDetails,
     searchRecipe,
-    getRandomRecipes
+    getRandomRecipes,
+    getRecipesPreview
 };
 
 
