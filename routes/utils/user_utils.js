@@ -112,10 +112,12 @@ async function insertIngredients(recipeId, ingredients) {
 // Function to insert instructions into the instructions table
 async function insertInstructions(recipeId, instructions) {
     try {
-        for (const [index, instruction] of instructions.entries()) {
+        for (const instruction of instructions) {
+            console.log('step:', instruction.step_number)
+            console.log('description:', instruction.description.name)
             const instructionQuery = `
                 INSERT INTO instructions (recipe_id, step_number, description)
-                VALUES ('${recipeId}', ${index + 1}, '${instruction.description}')
+                VALUES ('${recipeId}', ${instruction.step_number}, '${instruction.description.name}')
             `;
             await DButils.execQuery(instructionQuery);
         }
@@ -161,9 +163,54 @@ async function getUserRecipes(username) {
       throw error;
     }
   }
+
+// Fetch the full details of the recipe for a specific user
+async function getUserRecipeFullDetails(username, recipe_id) {
+    try {
+        // Query to fetch the specific recipe by recipe ID for the logged-in user
+        const recipeQuery = `
+            SELECT * FROM user_recipe 
+            WHERE user_id = '${username}' AND recipe_id = ${recipe_id}
+        `;
+        const recipe = await DButils.execQuery(recipeQuery);
+
+        // Check if the recipe exists
+        if (recipe.length === 0) {
+            return [];  // If no recipe is found, return an empty array
+        }
+
+        // Fetch ingredients for the specific recipe
+        const ingredientsQuery = `
+            SELECT name, amount, unit 
+            FROM ingredients 
+            WHERE recipe_id = ${recipe_id}
+        `;
+        const ingredients = await DButils.execQuery(ingredientsQuery);
+
+        // Fetch instructions for the specific recipe, ordered by step number
+        const instructionsQuery = `
+            SELECT step_number, description 
+            FROM instructions 
+            WHERE recipe_id = ${recipe_id} 
+            ORDER BY step_number
+        `;
+        const instructions = await DButils.execQuery(instructionsQuery);
+
+        // Attach ingredients and instructions to the recipe object
+        recipe[0].ingredients = ingredients;
+        recipe[0].instructions = instructions;
+
+        // Return the full recipe details including ingredients and instructions
+        return recipe[0];
+    } catch (error) {
+        console.error('Error fetching full recipe details:', error.message);
+        throw error;  // Propagate the error to the caller
+    }
+}
   
 exports.getUserRecipes = getUserRecipes;
 exports.createNewRecipe = createNewRecipe;
 exports.insertIngredientsAndInstructions = insertIngredientsAndInstructions;
 exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
+exports.getUserRecipeFullDetails = getUserRecipeFullDetails;

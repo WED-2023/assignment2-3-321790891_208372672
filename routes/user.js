@@ -136,5 +136,23 @@ router.get('/recipes', async (req, res, next) => {
   }
 });
 
+  // This path returns a full details of a users recipe by its id
+router.get('/recipes/:recipeId', async (req, res, next) => {
+  try {
+    const username = req.session.username;  // Get the username from the session
+    console.log('Fetching recipes for user:', username);
+    console.log('id:', req.params.recipeId);
+    // Fetch recipes for the logged-in user
+    const recipe = await user_utils.getUserRecipeFullDetails(username, req.params.recipeId);
+    console.log("my recipe:", recipe);
+
+    // Send the full recipe as a response
+    res.status(200).send(recipe);
+  } catch (error) {
+    console.error('Error fetching recipes:', error.message);
+    next(error);  // Pass the error to the error handling middleware
+  }
+});
+
 module.exports = router;
 

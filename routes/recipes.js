@@ -52,6 +52,7 @@ router.get("/random", async (req, res, next) => {
 router.get("/:recipeId/fullDetails", async (req, res, next) => {
   try {
     const recipe = await recipes_utils.getRecipeFullDetails(req.params.recipeId);
+    console.log(recipe);
     res.send(recipe);
   } catch (error) {
     next(error);
