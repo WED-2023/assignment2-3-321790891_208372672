@@ -39,20 +39,39 @@ async function getRecipeDetails(recipe_id) {
     }
 }
 
+async function getRecipeFullDetails(recipe_id) {
+
+    let recipe_info = await getRecipeInformation(recipe_id);
+    let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, extendedIngredients, analyzedInstructions } = recipe_info.data;
+
+    return {
+        id: id,
+        title: title,
+        readyInMinutes: readyInMinutes,
+        image: image,
+        popularity: aggregateLikes,
+        vegan: vegan,
+        vegetarian: vegetarian,
+        glutenFree: glutenFree,
+        extendedIngredients: extendedIngredients,
+        analyzedInstructions : analyzedInstructions
+    }
+}
+
 
 async function searchRecipe(recipeName, cuisine, diet, intolerance, number, username) {
     const response = await axios.get(`${api_domain}/complexSearch`, {
         params: {
-            query: recipeName || '',  // Corrected from 'query' to 'recipeName'
-            cuisine: cuisine || '', 
-            diet: diet || '',
-            intolerances: intolerance || '',  // Corrected from 'intolerances' to 'intolerance'
-            number: number || 5,
-            apiKey: process.env.spooncular_apiKey
+          query: recipeName,  // Search query (recipe name)
+          cuisine: cuisine,   // Comma-separated list of cuisines
+          diet: diet,         // Comma-separated list of diets
+          intolerances: intolerance, // Comma-separated list of intolerances
+          number: number,     // Number of results
+          apiKey: process.env.spooncular_apiKey // API key from environment variables
         }
-    });
+      });
 
-    return getRecipesPreview(response.data.results.map((element) => element.id), username);
+    return getRecipesPreview(response.data.results.map((element) => element.id), username);
 }
 
 async function getRandomRecipes(number, includeTags, excludeTags) {
@@ -79,13 +98,16 @@ async function getRecipesPreview(recipe_ids) {
 }
 
 
+
+
 exports.getRecipeDetails = getRecipeDetails;
 module.exports = {
     getRecipeInformation,
     getRecipeDetails,
     searchRecipe,
     getRandomRecipes,
-    getRecipesPreview
+    getRecipesPreview,
+    getRecipeFullDetails
 };
 
 
