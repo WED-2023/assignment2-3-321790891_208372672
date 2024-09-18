@@ -15,11 +15,12 @@ router.get("/search", async (req, res, next) => {
     const diet = req.query.diet || ''; // Default to empty string if not provided
     const intolerance = req.query.intolerances || ''; // Default to empty string if not provided
     const number = req.query.number || 5; // Default to 5 if not provided
+    const sort = req.query.sort || 'time';
 
-    console.log('Query Parameters:', { recipeName, cuisine, diet, intolerance, number });
+    console.log('Query Parameters:', { recipeName, cuisine, diet, intolerance, number, sort });
 
     // Call the search function
-    const results = await recipes_utils.searchRecipe(recipeName, cuisine, diet, intolerance, number);
+    const results = await recipes_utils.searchRecipe(recipeName, cuisine, diet, intolerance, number, sort);
     
     // Send the results back to the client
     res.send(results);

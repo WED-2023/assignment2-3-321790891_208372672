@@ -123,11 +123,6 @@ router.get('/recipes', async (req, res, next) => {
     // Fetch recipes for the logged-in user
     const recipes = await user_utils.getUserRecipes(username);
 
-    // Check if recipes were found, else send an appropriate response
-    if (!recipes.length) {
-      return res.status(404).send({ message: 'No recipes found' });
-    }
-
     // Send the recipes as a response
     res.status(200).send(recipes);
   } catch (error) {
