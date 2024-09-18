@@ -60,7 +60,7 @@ async function getRecipeFullDetails(recipe_id) {
 }
 
 
-async function searchRecipe(recipeName, cuisine, diet, intolerance, number, username) {
+async function searchRecipe(recipeName, cuisine, diet, intolerance, number, sort, username) {
     const response = await axios.get(`${api_domain}/complexSearch`, {
         params: {
           query: recipeName,  // Search query (recipe name)
@@ -68,6 +68,7 @@ async function searchRecipe(recipeName, cuisine, diet, intolerance, number, user
           diet: diet,         // Comma-separated list of diets
           intolerances: intolerance, // Comma-separated list of intolerances
           number: number,     // Number of results
+          sort: sort,
           apiKey: process.env.spooncular_apiKey // API key from environment variables
         }
       });
