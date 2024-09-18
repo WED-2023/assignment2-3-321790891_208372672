@@ -28,10 +28,12 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "dist")));
+// app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.join(__dirname, '../assignment2-1-321790891_208372672/dist')));
 
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(path.join(__dirname, '../assignment2-1-321790891_208372672/dist/index.html'));
+  // res.sendFile(__dirname + "/index.html");
 });
 
 const corsConfig = {
@@ -112,15 +114,16 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500).send({ message: err.message, success: false });
 });
 
-// Start the server
-const server = app.listen(port, () => {
-  console.log(`Server listen on port ${port}`);
-});
+// // Start the server
+// const server = app.listen(port, () => {
+//   console.log(`Server listen on port ${port}`);
+// });
 
-// Handle server shutdown gracefully
-process.on("SIGINT", function () {
-  if (server) {
-    server.close(() => console.log("server closed"));
-  }
-  process.exit();
-});
+// // Handle server shutdown gracefully
+// process.on("SIGINT", function () {
+//   if (server) {
+//     server.close(() => console.log("server closed"));
+//   }
+//   process.exit();
+// });
+module.exports=app;
